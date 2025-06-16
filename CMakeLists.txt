@@ -34,6 +34,13 @@ add_library(myactuator_rmd SHARED
 target_compile_features(myactuator_rmd PUBLIC
   cxx_std_17
 )
+# Add strict compilation flags
+target_compile_options(myactuator_rmd PRIVATE
+  -Wall
+  -Wextra
+  -Werror
+  -Wpedantic
+)
 target_include_directories(myactuator_rmd PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
@@ -65,6 +72,13 @@ if(PYTHON_BINDINGS)
   target_compile_features(myactuator_rmd_py PUBLIC
     cxx_std_17
   )
+  # Add strict compilation flags for Python bindings
+  target_compile_options(myactuator_rmd_py PRIVATE
+    -Wall
+    -Wextra
+    -Werror
+    -Wpedantic
+  )
   target_link_libraries(myactuator_rmd_py PUBLIC
     myactuator_rmd
   )
@@ -89,6 +103,13 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
     target_compile_features(can_node PUBLIC
       cxx_std_17
     )
+    # Add strict compilation flags for can_node
+    target_compile_options(can_node PRIVATE
+      -Wall
+      -Wextra
+      -Werror
+      -Wpedantic
+    )
     target_link_libraries(can_node PUBLIC
       Boost::program_options
       myactuator_rmd
@@ -110,6 +131,13 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
     cxx_std_17
   )
   target_compile_definitions(run_tests PUBLIC NDEBUG)
+  # Add strict compilation flags for tests
+  target_compile_options(run_tests PRIVATE
+    -Wall
+    -Wextra
+    -Werror
+    -Wpedantic
+  )
   set(MYACTUATOR_RMD_TEST_LIBRARIES myactuator_rmd GTest::gmock GTest::gtest pthread)
   target_link_libraries(run_tests PUBLIC
     ${MYACTUATOR_RMD_TEST_LIBRARIES}
@@ -157,4 +185,41 @@ else()
     ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
     DESTINATION ${INSTALL_CMAKE_CONFIG_DIR}
   )
+endif()
+
+# Code formatting targets
+find_program(CLANG_FORMAT_EXECUTABLE NAMES clang-format)
+
+if(CLANG_FORMAT_EXECUTABLE)
+  # Find all source files
+  file(GLOB_RECURSE ALL_SOURCE_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/*.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/*.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/test/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test/*.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test/*.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/bindings/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/bindings/*.hpp
+  )
+
+  # Format target - applies formatting in-place
+  add_custom_target(format
+    COMMAND ${CLANG_FORMAT_EXECUTABLE} -i ${ALL_SOURCE_FILES}
+    COMMENT "Formatting all source files with clang-format"
+    VERBATIM
+  )
+
+  # Format-check target - verifies formatting without changes
+  add_custom_target(format-check
+    COMMAND ${CLANG_FORMAT_EXECUTABLE} --dry-run --Werror ${ALL_SOURCE_FILES}
+    COMMENT "Checking source file formatting with clang-format"
+    VERBATIM
+  )
+
+  message(STATUS "clang-format found: ${CLANG_FORMAT_EXECUTABLE}")
+  message(STATUS "Added 'format' and 'format-check' targets")
+else()
+  message(WARNING "clang-format not found. Format targets will not be available.")
 endif()
