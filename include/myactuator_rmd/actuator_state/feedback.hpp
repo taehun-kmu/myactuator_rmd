@@ -4,7 +4,7 @@
  *    Contains the struct for closed-loop control feedback
  * \author
  *    Tobit Flatscher (github.com/2b-t)
-*/
+ */
 
 #ifndef MYACTUATOR_RMD__ACTUATOR_STATE__FEEDBACK
 #define MYACTUATOR_RMD__ACTUATOR_STATE__FEEDBACK
@@ -12,12 +12,11 @@
 
 #include "myactuator_rmd/actuator_state/motor_status_2.hpp"
 
-
 namespace myactuator_rmd {
 
-  // The feedback struct for any closed-loop control corresponds to motor status 2
-  using Feedback = MotorStatus2;
+// The feedback struct for any closed-loop control corresponds to motor status 2
+using Feedback = MotorStatus2;
 
-}
+}  // namespace myactuator_rmd
 
-#endif // MYACTUATOR_RMD__ACTUATOR_STATE__FEEDBACK
+#endif  // MYACTUATOR_RMD__ACTUATOR_STATE__FEEDBACK

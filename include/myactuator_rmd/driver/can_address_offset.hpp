@@ -4,7 +4,7 @@
  *    Contains the address offset for CAN requests and responses
  * \author
  *    Tobit Flatscher (github.com/2b-t)
-*/
+ */
 
 #ifndef MYACTUATOR_RMD__DRIVER__CAN_ADDRESS_OFFSET
 #define MYACTUATOR_RMD__DRIVER__CAN_ADDRESS_OFFSET
@@ -12,19 +12,18 @@
 
 #include <cstdint>
 
-
 namespace myactuator_rmd {
 
-  /**\class CanAddressOffset
-   * \brief
-   *    Holds offsets for the CAN request and the response messages
-  */
-  class CanAddressOffset {
-    public:
-      inline static constexpr std::uint32_t request {0x140};
-      inline static constexpr std::uint32_t response {0x240};
-  };
+/**\class CanAddressOffset
+ * \brief
+ *    Holds offsets for the CAN request and the response messages
+ */
+class CanAddressOffset {
+ public:
+  inline static constexpr std::uint32_t request{0x140};
+  inline static constexpr std::uint32_t response{0x240};
+};
 
-}
+}  // namespace myactuator_rmd
 
-#endif // MYACTUATOR_RMD__DRIVER__CAN_ADDRESS_OFFSET
+#endif  // MYACTUATOR_RMD__DRIVER__CAN_ADDRESS_OFFSET
