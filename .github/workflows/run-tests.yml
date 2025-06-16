@@ -26,7 +26,7 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential cmake
+          sudo apt-get install -y build-essential cmake ninja-build
           sudo apt-get install -y can-utils iproute2 linux-modules-extra-$(uname -r)
           sudo apt-get install -y python3 python3-pybind11
           sudo apt-get install -y libboost-all-dev libgmock-dev libgtest-dev
@@ -38,6 +38,7 @@ jobs:
       - name: Configure project with CMake
         run: |
           cmake -B ${GITHUB_WORKSPACE}/build -S ${GITHUB_WORKSPACE} \
+            -G Ninja \
             -D PYTHON_BINDINGS=on \
             -D BUILD_TESTING=on \
             -D ENABLE_COVERAGE=on
@@ -45,14 +46,14 @@ jobs:
       - name: Check code formatting
         run: |
           echo "::group::Running format check"
-          make -C ${GITHUB_WORKSPACE}/build format-check
+          ninja -C ${GITHUB_WORKSPACE}/build format-check
           echo "::endgroup::"
         continue-on-error: false
         
       - name: Build project with strict warnings
         run: |
           echo "::group::Compiling with strict warning flags"
-          make -j $(nproc) -C ${GITHUB_WORKSPACE}/build
+          ninja -j $(nproc) -C ${GITHUB_WORKSPACE}/build
           echo "::endgroup::"
         continue-on-error: false
         
