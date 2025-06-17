@@ -34,6 +34,7 @@ class Message {
       const noexcept;
 
  protected:
+  // Constructors
   /**\fn Message
    * \brief
    *    Class constructor
@@ -45,10 +46,13 @@ class Message {
    */
   constexpr Message(std::array<std::uint8_t, 8> const& data = {}) noexcept;
   Message(Message const&) = default;
-  Message& operator=(Message const&) = default;
   Message(Message&&) = default;
+
+  // Assignment operators
+  Message& operator=(Message const&) = default;
   Message& operator=(Message&&) = default;
 
+  // Template methods
   /**\fn setAt
    * \brief
    *    Sets the given value to the data values located at [i, i + sizeof(T)[ by
@@ -82,6 +86,7 @@ class Message {
             typename std::enable_if_t<std::is_integral_v<T>>* = nullptr>
   [[nodiscard]] T getAs(std::size_t const i) const;
 
+  // Data members
   std::array<std::uint8_t, 8> data_;
 };
 

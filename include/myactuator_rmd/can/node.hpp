@@ -28,6 +28,7 @@ namespace can {
  */
 class Node {
  public:
+  // Constructors and destructor
   /**\fn Node
    * \brief
    *    Class constructor, initialises the socket that should be used for
@@ -49,11 +50,47 @@ class Node {
        bool const is_signal_errors = true);
   Node() = delete;
   Node(Node const&) = delete;
-  Node& operator=(Node const&) = default;
   Node(Node&&) = default;
-  Node& operator=(Node&&) = default;
   ~Node();
 
+  // Assignment operators
+  Node& operator=(Node const&) = default;
+  Node& operator=(Node&&) = default;
+
+  // Communication methods
+  /**\fn read
+   * \brief
+   *    Read a CAN frame in a blocking manner
+   *    Only CAN frames that a receive filter was set for can be read
+   *
+   * \return
+   *    The read CAN frame
+   */
+  [[nodiscard]] Frame read() const;
+
+  /**\fn write
+   * \brief
+   *   Write the given CAN frame
+   *
+   * \param[in] frame
+   *    The CAN frame to be written
+   */
+  void write(Frame const& frame);
+
+  /**\fn write
+   * \brief
+   *    Write the given data to a CAN frame with the corresponding can_id and
+   * enqueue it
+   *
+   * \param[in] can_id
+   *   The CAN id that the data should be sent to
+   * \param[in] data
+   *    The data to be sent
+   */
+  void write(std::uint32_t const can_id,
+             std::array<std::uint8_t, 8> const& data);
+
+  // Configuration methods
   /**\fn setLoopback
    * \brief
    *    Set the socket to also receive its own messages, this can be desirable
@@ -104,39 +141,8 @@ class Node {
    */
   void setErrorFilters(bool const is_signal_errors);
 
-  /**\fn read
-   * \brief
-   *    Read a CAN frame in a blocking manner
-   *    Only CAN frames that a receive filter was set for can be read
-   *
-   * \return
-   *    The read CAN frame
-   */
-  [[nodiscard]] Frame read() const;
-
-  /**\fn write
-   * \brief
-   *   Write the given CAN frame
-   *
-   * \param[in] frame
-   *    The CAN frame to be written
-   */
-  void write(Frame const& frame);
-
-  /**\fn write
-   * \brief
-   *    Write the given data to a CAN frame with the corresponding can_id and
-   * enqueue it
-   *
-   * \param[in] can_id
-   *   The CAN id that the data should be sent to
-   * \param[in] data
-   *    The data to be sent
-   */
-  void write(std::uint32_t const can_id,
-             std::array<std::uint8_t, 8> const& data);
-
  protected:
+  // Utility methods
   /**\fn initSocket
    * \brief
    *    Initialise a socket for the given network interface
@@ -152,6 +158,7 @@ class Node {
    */
   void closeSocket() noexcept;
 
+  // Data members
   std::string ifname_;
   int socket_;
 };

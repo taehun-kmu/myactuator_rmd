@@ -32,6 +32,7 @@ namespace myactuator_rmd {
  */
 class ActuatorInterface {
  public:
+  // Constructors and destructor
   /**\fn ActuatorInterface
    * \brief
    *    Class constructor
@@ -44,10 +45,13 @@ class ActuatorInterface {
   ActuatorInterface(Driver& driver, std::uint32_t const actuator_id);
   ActuatorInterface() = delete;
   ActuatorInterface(ActuatorInterface const&) = default;
-  ActuatorInterface& operator=(ActuatorInterface const&) = default;
   ActuatorInterface(ActuatorInterface&&) = default;
+
+  // Assignment operators
+  ActuatorInterface& operator=(ActuatorInterface const&) = default;
   ActuatorInterface& operator=(ActuatorInterface&&) = default;
 
+  // Getter methods
   /**\fn getAcceleration
    * \brief
    *    Reads the current acceleration
@@ -206,6 +210,7 @@ class ActuatorInterface {
    */
   [[nodiscard]] std::uint32_t getVersionDate();
 
+  // Control methods (brake, reset)
   /**\fn lockBrake
    * \brief
    *    Close the holding brake. The motor won't be able to turn anymore.
@@ -224,6 +229,7 @@ class ActuatorInterface {
    */
   void reset();
 
+  // Setpoint methods
   /**\fn sendCurrentSetpoint
    * \brief
    *    Send a current set-point to the actuator
@@ -279,6 +285,7 @@ class ActuatorInterface {
    */
   Feedback sendVelocitySetpoint(float const speed);
 
+  // Configuration setter methods
   /**\fn setAcceleration
    * \brief
    *    Write the acceleration/deceleration for the different modes to RAM and
@@ -362,6 +369,7 @@ class ActuatorInterface {
    */
   void setTimeout(std::chrono::milliseconds const& timeout);
 
+  // Motor control methods
   /**\fn shutdownMotor
    * \brief
    *    Turn off the motor
