@@ -74,9 +74,9 @@ class Node::Impl {
 
 // Impl class constructor
 Node::Impl::Impl(std::string const& ifname,
-                  std::chrono::microseconds const& send_timeout,
-                  std::chrono::microseconds const& receive_timeout,
-                  bool const is_signal_errors)
+                 std::chrono::microseconds const& send_timeout,
+                 std::chrono::microseconds const& receive_timeout,
+                 bool const is_signal_errors)
     : ifname_{}, socket_{-1} {
   initSocket(ifname);
   setSendTimeout(send_timeout);
@@ -93,8 +93,8 @@ Node::Node(std::string const& ifname,
            std::chrono::microseconds const& send_timeout,
            std::chrono::microseconds const& receive_timeout,
            bool const is_signal_errors)
-    : pimpl_{std::make_unique<Impl>(ifname, send_timeout, receive_timeout, is_signal_errors)} {
-}
+    : pimpl_{std::make_unique<Impl>(ifname, send_timeout, receive_timeout,
+                                    is_signal_errors)} {}
 
 Node::~Node() = default;
 

@@ -27,7 +27,7 @@ class ActuatorInterface::Impl {
   Impl(Impl const&) = delete;
   Impl& operator=(Impl const&) = delete;
 
-  // Delete move constructor and assignment operator  
+  // Delete move constructor and assignment operator
   Impl(Impl&&) = delete;
   Impl& operator=(Impl&&) = delete;
 
@@ -57,12 +57,14 @@ class ActuatorInterface::Impl {
 
   // Setpoint methods
   Feedback sendCurrentSetpoint(float const current);
-  Feedback sendPositionAbsoluteSetpoint(float const position, float const max_speed);
+  Feedback sendPositionAbsoluteSetpoint(float const position,
+                                        float const max_speed);
   Feedback sendTorqueSetpoint(float const torque, float const torque_constant);
   Feedback sendVelocitySetpoint(float const speed);
 
   // Configuration setter methods
-  void setAcceleration(std::uint32_t const acceleration, AccelerationType const mode);
+  void setAcceleration(std::uint32_t const acceleration,
+                       AccelerationType const mode);
   void setCanBaudRate(CanBaudRate const baud_rate);
   void setCanId(std::uint16_t const can_id);
   std::int32_t setCurrentPositionAsEncoderZero();
@@ -88,13 +90,14 @@ ActuatorInterface::Impl::Impl(Driver& driver, std::uint32_t const actuator_id)
 // ActuatorInterface constructor and destructor
 ActuatorInterface::ActuatorInterface(Driver& driver,
                                      std::uint32_t const actuator_id)
-    : pimpl_{std::make_unique<Impl>(driver, actuator_id)} {
-}
+    : pimpl_{std::make_unique<Impl>(driver, actuator_id)} {}
 
 ActuatorInterface::~ActuatorInterface() = default;
 
-ActuatorInterface::ActuatorInterface(ActuatorInterface&& other) noexcept = default;
-ActuatorInterface& ActuatorInterface::operator=(ActuatorInterface&& other) noexcept = default;
+ActuatorInterface::ActuatorInterface(ActuatorInterface&& other) noexcept =
+    default;
+ActuatorInterface& ActuatorInterface::operator=(
+    ActuatorInterface&& other) noexcept = default;
 
 // ActuatorInterface public methods - delegate to Impl
 std::int32_t ActuatorInterface::getAcceleration() {
@@ -181,11 +184,13 @@ Feedback ActuatorInterface::sendCurrentSetpoint(float const current) {
   return pimpl_->sendCurrentSetpoint(current);
 }
 
-Feedback ActuatorInterface::sendPositionAbsoluteSetpoint(float const position, float const max_speed) {
+Feedback ActuatorInterface::sendPositionAbsoluteSetpoint(
+    float const position, float const max_speed) {
   return pimpl_->sendPositionAbsoluteSetpoint(position, max_speed);
 }
 
-Feedback ActuatorInterface::sendTorqueSetpoint(float const torque, float const torque_constant) {
+Feedback ActuatorInterface::sendTorqueSetpoint(float const torque,
+                                               float const torque_constant) {
   return pimpl_->sendTorqueSetpoint(torque, torque_constant);
 }
 
@@ -193,7 +198,8 @@ Feedback ActuatorInterface::sendVelocitySetpoint(float const speed) {
   return pimpl_->sendVelocitySetpoint(speed);
 }
 
-void ActuatorInterface::setAcceleration(std::uint32_t const acceleration, AccelerationType const mode) {
+void ActuatorInterface::setAcceleration(std::uint32_t const acceleration,
+                                        AccelerationType const mode) {
   pimpl_->setAcceleration(acceleration, mode);
 }
 
@@ -213,7 +219,8 @@ void ActuatorInterface::setEncoderZero(std::int32_t const encoder_offset) {
   pimpl_->setEncoderZero(encoder_offset);
 }
 
-Gains ActuatorInterface::setControllerGains(Gains const& gains, bool const is_persistent) {
+Gains ActuatorInterface::setControllerGains(Gains const& gains,
+                                            bool const is_persistent) {
   return pimpl_->setControllerGains(gains, is_persistent);
 }
 
@@ -377,8 +384,8 @@ Feedback ActuatorInterface::Impl::sendPositionAbsoluteSetpoint(
   return response.getStatus();
 }
 
-Feedback ActuatorInterface::Impl::sendTorqueSetpoint(float const torque,
-                                                     float const torque_constant) {
+Feedback ActuatorInterface::Impl::sendTorqueSetpoint(
+    float const torque, float const torque_constant) {
   auto const current{torque / torque_constant};
   return sendCurrentSetpoint(current);
 }
@@ -414,7 +421,8 @@ std::int32_t ActuatorInterface::Impl::setCurrentPositionAsEncoderZero() {
   return response.getEncoderZero();
 }
 
-void ActuatorInterface::Impl::setEncoderZero(std::int32_t const encoder_offset) {
+void ActuatorInterface::Impl::setEncoderZero(
+    std::int32_t const encoder_offset) {
   SetEncoderZeroRequest const request{encoder_offset};
   [[maybe_unused]] SetEncoderZeroResponse const response{
       driver_.sendRecv(request, actuator_id_)};
@@ -435,7 +443,8 @@ Gains ActuatorInterface::Impl::setControllerGains(Gains const& gains,
   }
 }
 
-void ActuatorInterface::Impl::setTimeout(std::chrono::milliseconds const& timeout) {
+void ActuatorInterface::Impl::setTimeout(
+    std::chrono::milliseconds const& timeout) {
   SetTimeoutRequest const request{timeout};
   [[maybe_unused]] SetTimeoutResponse const response{
       driver_.sendRecv(request, actuator_id_)};
