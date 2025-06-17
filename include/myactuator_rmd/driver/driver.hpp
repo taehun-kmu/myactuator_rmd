@@ -63,6 +63,12 @@ class Driver {
   [[nodiscard]] virtual std::array<std::uint8_t, 8> sendRecv(
       Message const& request, std::uint32_t const actuator_id) = 0;
 
+  /**\fn ~Driver
+   * \brief
+   *    Virtual destructor to ensure proper cleanup of derived classes
+   */
+  virtual ~Driver() = default;
+
  protected:
   Driver() = default;
   Driver(Driver const&) = default;
