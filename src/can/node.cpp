@@ -31,24 +31,110 @@
 namespace myactuator_rmd {
 namespace can {
 
-Node::Node(std::string const& ifname,
-           std::chrono::microseconds const& send_timeout,
-           std::chrono::microseconds const& receive_timeout,
-           bool const is_signal_errors)
+// Implementation class definition
+class Node::Impl {
+ public:
+  explicit Impl(std::string const& ifname,
+                std::chrono::microseconds const& send_timeout,
+                std::chrono::microseconds const& receive_timeout,
+                bool const is_signal_errors);
+  ~Impl();
+
+  // Delete copy constructor and assignment operator
+  Impl(Impl const&) = delete;
+  Impl& operator=(Impl const&) = delete;
+
+  // Delete move constructor and assignment operator
+  Impl(Impl&&) = delete;
+  Impl& operator=(Impl&&) = delete;
+
+  // Communication methods
+  [[nodiscard]] Frame read() const;
+  void write(Frame const& frame);
+  void write(std::uint32_t const can_id,
+             std::array<std::uint8_t, 8> const& data);
+
+  // Configuration methods
+  void setLoopback(bool const is_loopback);
+  void setRecvFilter(std::vector<std::uint32_t> const& can_ids,
+                     bool const is_invert = false);
+  void setSendTimeout(std::chrono::microseconds const& timeout);
+  void setRecvTimeout(std::chrono::microseconds const& timeout);
+  void setErrorFilters(bool const is_signal_errors);
+
+ private:
+  // Utility methods
+  void initSocket(std::string const& ifname);
+  void closeSocket() noexcept;
+
+  // Data members
+  std::string ifname_;
+  int socket_;
+};
+
+// Impl class constructor
+Node::Impl::Impl(std::string const& ifname,
+                  std::chrono::microseconds const& send_timeout,
+                  std::chrono::microseconds const& receive_timeout,
+                  bool const is_signal_errors)
     : ifname_{}, socket_{-1} {
   initSocket(ifname);
   setSendTimeout(send_timeout);
   setRecvTimeout(receive_timeout);
   setErrorFilters(is_signal_errors);
-  return;
 }
 
-Node::~Node() {
+Node::Impl::~Impl() {
   closeSocket();
-  return;
 }
 
+// Node class constructor and destructor
+Node::Node(std::string const& ifname,
+           std::chrono::microseconds const& send_timeout,
+           std::chrono::microseconds const& receive_timeout,
+           bool const is_signal_errors)
+    : pimpl_{std::make_unique<Impl>(ifname, send_timeout, receive_timeout, is_signal_errors)} {
+}
+
+Node::~Node() = default;
+
+// Node public methods - delegate to Impl
 void Node::setLoopback(bool const is_loopback) {
+  pimpl_->setLoopback(is_loopback);
+}
+
+void Node::setRecvFilter(std::vector<std::uint32_t> const& can_ids,
+                         bool const is_invert) {
+  pimpl_->setRecvFilter(can_ids, is_invert);
+}
+
+void Node::setSendTimeout(std::chrono::microseconds const& timeout) {
+  pimpl_->setSendTimeout(timeout);
+}
+
+void Node::setRecvTimeout(std::chrono::microseconds const& timeout) {
+  pimpl_->setRecvTimeout(timeout);
+}
+
+void Node::setErrorFilters(bool const is_signal_errors) {
+  pimpl_->setErrorFilters(is_signal_errors);
+}
+
+Frame Node::read() const {
+  return pimpl_->read();
+}
+
+void Node::write(Frame const& frame) {
+  pimpl_->write(frame);
+}
+
+void Node::write(std::uint32_t const can_id,
+                 std::array<std::uint8_t, 8> const& data) {
+  pimpl_->write(can_id, data);
+}
+
+// Impl class method implementations
+void Node::Impl::setLoopback(bool const is_loopback) {
   int const recv_own_msgs{static_cast<int>(is_loopback)};
   if (::setsockopt(socket_, SOL_CAN_RAW, CAN_RAW_RECV_OWN_MSGS, &recv_own_msgs,
                    sizeof(int)) < 0) {
@@ -56,18 +142,16 @@ void Node::setLoopback(bool const is_loopback) {
         errno, std::generic_category(),
         "Interface '" + ifname_ + "' - Could not configure loopback");
   }
-  return;
 }
 
-void Node::setRecvFilter(std::vector<std::uint32_t> const& can_ids,
-                         bool const is_invert) {
+void Node::Impl::setRecvFilter(std::vector<std::uint32_t> const& can_ids,
+                               bool const is_invert) {
   std::vector<struct ::can_filter> filters{};
   filters.resize(can_ids.size());
   for (std::size_t i = 0; i < can_ids.size(); ++i) {
     auto const& can_id{can_ids[i]};
     if (is_invert) {
       filters[i].can_id = can_id | CAN_INV_FILTER;
-      ;
     } else {
       filters[i].can_id = can_id;
     }
@@ -79,10 +163,9 @@ void Node::setRecvFilter(std::vector<std::uint32_t> const& can_ids,
         errno, std::generic_category(),
         "Interface '" + ifname_ + "' - Could not configure read filter");
   }
-  return;
 }
 
-void Node::setSendTimeout(std::chrono::microseconds const& timeout) {
+void Node::Impl::setSendTimeout(std::chrono::microseconds const& timeout) {
   struct ::timeval const send_timeout{myactuator_rmd::toTimeval(timeout)};
   if (::setsockopt(socket_, SOL_SOCKET, SO_SNDTIMEO,
                    reinterpret_cast<const char*>(&send_timeout),
@@ -91,10 +174,9 @@ void Node::setSendTimeout(std::chrono::microseconds const& timeout) {
         errno, std::generic_category(),
         "Interface '" + ifname_ + "' - Error setting socket timeout");
   }
-  return;
 }
 
-void Node::setRecvTimeout(std::chrono::microseconds const& timeout) {
+void Node::Impl::setRecvTimeout(std::chrono::microseconds const& timeout) {
   struct ::timeval const recv_timeout{myactuator_rmd::toTimeval(timeout)};
   if (::setsockopt(socket_, SOL_SOCKET, SO_RCVTIMEO,
                    reinterpret_cast<const char*>(&recv_timeout),
@@ -103,10 +185,9 @@ void Node::setRecvTimeout(std::chrono::microseconds const& timeout) {
         errno, std::generic_category(),
         "Interface '" + ifname_ + "' - Error setting socket timeout");
   }
-  return;
 }
 
-void Node::setErrorFilters(bool const is_signal_errors) {
+void Node::Impl::setErrorFilters(bool const is_signal_errors) {
   // See
   // https://github.com/linux-can/can-utils/blob/master/include/linux/can/error.h
   ::can_err_mask_t err_mask{};
@@ -121,10 +202,9 @@ void Node::setErrorFilters(bool const is_signal_errors) {
         errno, std::generic_category(),
         "Interface '" + ifname_ + "' - Error setting error acknowledgement");
   }
-  return;
 }
 
-Frame Node::read() const {
+Frame Node::Impl::read() const {
   struct ::can_frame frame {};
   if (::read(socket_, &frame, sizeof(struct ::can_frame)) < 0) {
     throw SocketException(
@@ -166,12 +246,12 @@ Frame Node::read() const {
   return f;
 }
 
-void Node::write(Frame const& frame) {
-  return write(frame.getId(), frame.getData());
+void Node::Impl::write(Frame const& frame) {
+  write(frame.getId(), frame.getData());
 }
 
-void Node::write(std::uint32_t const can_id,
-                 std::array<std::uint8_t, 8> const& data) {
+void Node::Impl::write(std::uint32_t const can_id,
+                       std::array<std::uint8_t, 8> const& data) {
   struct ::can_frame frame {};
   frame.can_id = can_id;
   frame.len = 8;
@@ -185,10 +265,9 @@ void Node::write(std::uint32_t const can_id,
                               "' - Could not write CAN frame '" + ss.str() +
                               "'");
   }
-  return;
 }
 
-void Node::initSocket(std::string const& ifname) {
+void Node::Impl::initSocket(std::string const& ifname) {
   ifname_ = ifname;
   socket_ = ::socket(PF_CAN, SOCK_RAW, CAN_RAW);
   if (socket_ < 0) {
@@ -214,12 +293,10 @@ void Node::initSocket(std::string const& ifname) {
         errno, std::generic_category(),
         "Interface '" + ifname_ + "' - Error assigning address to socket");
   }
-  return;
 }
 
-void Node::closeSocket() noexcept {
+void Node::Impl::closeSocket() noexcept {
   ::close(socket_);
-  return;
 }
 
 }  // namespace can

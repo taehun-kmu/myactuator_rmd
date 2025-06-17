@@ -13,6 +13,7 @@
 #include <array>
 #include <chrono>
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -141,26 +142,9 @@ class Node {
    */
   void setErrorFilters(bool const is_signal_errors);
 
- protected:
-  // Utility methods
-  /**\fn initSocket
-   * \brief
-   *    Initialise a socket for the given network interface
-   *
-   * \param[in] ifname
-   *    The name of the network interface that should communicated over
-   */
-  void initSocket(std::string const& ifname);
-
-  /**\fn closeSocket
-   * \brief
-   *    Close the underlying socket
-   */
-  void closeSocket() noexcept;
-
-  // Data members
-  std::string ifname_;
-  int socket_;
+ private:
+  class Impl;
+  std::unique_ptr<Impl> pimpl_;
 };
 
 }  // namespace can
