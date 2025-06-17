@@ -23,7 +23,7 @@ class ActuatorInterface;
  * \brief
  *    CAN driver for commanding several MyActuator RMD actuators
  */
-class CanDriver
+class CanDriver final
     : public CanNode<CanAddressOffset::request, CanAddressOffset::response> {
  public:
   /**\fn CanDriver
