@@ -8,7 +8,6 @@
 
 #ifndef MYACTUATOR_RMD__ACTUATOR_STATE__MOTOR_STATUS_2
 #define MYACTUATOR_RMD__ACTUATOR_STATE__MOTOR_STATUS_2
-#pragma once
 
 namespace myactuator_rmd {
 

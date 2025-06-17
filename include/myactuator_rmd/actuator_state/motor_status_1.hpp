@@ -8,7 +8,6 @@
 
 #ifndef MYACTUATOR_RMD__ACTUATOR_STATE__MOTOR_STATUS_1
 #define MYACTUATOR_RMD__ACTUATOR_STATE__MOTOR_STATUS_1
-#pragma once
 
 #include "myactuator_rmd/actuator_state/error_code.hpp"
 

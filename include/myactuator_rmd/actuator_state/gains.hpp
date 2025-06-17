@@ -8,7 +8,6 @@
 
 #ifndef MYACTUATOR_RMD__ACTUATOR_STATE__GAINS
 #define MYACTUATOR_RMD__ACTUATOR_STATE__GAINS
-#pragma once
 
 #include <cstdint>
 

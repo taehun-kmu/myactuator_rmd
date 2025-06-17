@@ -8,7 +8,6 @@
 
 #ifndef MYACTUATOR_RMD__ACTUATOR_STATE__ERROR_CODE
 #define MYACTUATOR_RMD__ACTUATOR_STATE__ERROR_CODE
-#pragma once
 
 #include <cstdint>
 

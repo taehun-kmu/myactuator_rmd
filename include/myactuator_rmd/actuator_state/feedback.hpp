@@ -8,7 +8,6 @@
 
 #ifndef MYACTUATOR_RMD__ACTUATOR_STATE__FEEDBACK
 #define MYACTUATOR_RMD__ACTUATOR_STATE__FEEDBACK
-#pragma once
 
 #include "myactuator_rmd/actuator_state/motor_status_2.hpp"
 

@@ -8,7 +8,6 @@
 
 #ifndef MYACTUATOR_RMD__DRIVER__CAN_ADDRESS_OFFSET
 #define MYACTUATOR_RMD__DRIVER__CAN_ADDRESS_OFFSET
-#pragma once
 
 #include <cstdint>
 

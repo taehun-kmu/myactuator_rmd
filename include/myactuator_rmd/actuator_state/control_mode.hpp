@@ -8,7 +8,6 @@
 
 #ifndef MYACTUATOR_RMD__ACTUATOR_STATE__CONTROL_MODE
 #define MYACTUATOR_RMD__ACTUATOR_STATE__CONTROL_MODE
-#pragma once
 
 #include <cstdint>
 

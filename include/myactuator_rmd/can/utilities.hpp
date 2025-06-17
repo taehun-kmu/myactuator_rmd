@@ -8,7 +8,6 @@
 
 #ifndef MYACTUATOR_RMD__CAN__UTILITIES
 #define MYACTUATOR_RMD__CAN__UTILITIES
-#pragma once
 
 #include <linux/can.h>
 #include <sys/time.h>

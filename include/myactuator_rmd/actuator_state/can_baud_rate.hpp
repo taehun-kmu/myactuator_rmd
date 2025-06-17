@@ -8,7 +8,6 @@
 
 #ifndef MYACTUATOR_RMD__ACTUATOR_STATE__CAN_BAUD_RATE
 #define MYACTUATOR_RMD__ACTUATOR_STATE__CAN_BAUD_RATE
-#pragma once
 
 #include <cstdint>
 
