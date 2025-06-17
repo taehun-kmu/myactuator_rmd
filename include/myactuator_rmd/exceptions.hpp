@@ -27,7 +27,7 @@ class Exception : public std::runtime_error {
  * \brief
  *    Exception class for driver protocol parsing error
  */
-class ProtocolException : public Exception {
+class ProtocolException final : public Exception {
  public:
   using Exception::Exception;
 };
@@ -36,7 +36,7 @@ class ProtocolException : public Exception {
  * \brief
  *    Exception class for values that are outside their expected range
  */
-class ValueRangeException : public Exception {
+class ValueRangeException final : public Exception {
  public:
   using Exception::Exception;
 };
