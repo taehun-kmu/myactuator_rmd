@@ -82,7 +82,7 @@ int main(int argc, char** argv) {
     while (true) {
       auto const frame{node.read()};
       auto const d{frame.getData()};
-      for (int i = 0; i < d.size(); ++i) {
+      for (std::size_t i = 0; i < d.size(); ++i) {
         std::cout << std::hex << std::setfill('0') << std::setw(2)
                   << static_cast<unsigned int>(d.at(i)) << " ";
       }
