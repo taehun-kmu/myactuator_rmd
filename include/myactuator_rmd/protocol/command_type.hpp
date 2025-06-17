@@ -8,7 +8,6 @@
 
 #ifndef MYACTUATOR_RMD__PROTOCOL__COMMAND_TYPE
 #define MYACTUATOR_RMD__PROTOCOL__COMMAND_TYPE
-#pragma once
 
 #include <cstdint>
 

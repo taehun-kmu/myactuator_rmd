@@ -8,7 +8,6 @@
 
 #ifndef MYACTUATOR_RMD__MYACTUATOR_RMD
 #define MYACTUATOR_RMD__MYACTUATOR_RMD
-#pragma once
 
 #include "myactuator_rmd/actuator_constants.hpp"
 #include "myactuator_rmd/actuator_interface.hpp"

@@ -8,7 +8,6 @@
 
 #ifndef MYACTUATOR_RMD__PROTOCOL__SINGLE_MOTOR_MESSAGE
 #define MYACTUATOR_RMD__PROTOCOL__SINGLE_MOTOR_MESSAGE
-#pragma once
 
 #include <array>
 #include <cstdint>

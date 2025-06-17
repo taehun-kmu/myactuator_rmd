@@ -8,7 +8,6 @@
 
 #ifndef MYACTUATOR_RMD__EXCEPTIONS
 #define MYACTUATOR_RMD__EXCEPTIONS
-#pragma once
 
 #include <stdexcept>
 

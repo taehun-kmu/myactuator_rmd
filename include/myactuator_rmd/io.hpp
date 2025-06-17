@@ -8,7 +8,6 @@
 
 #ifndef MYACTUATOR_RMD__IO
 #define MYACTUATOR_RMD__IO
-#pragma once
 
 #include <iomanip>
 #include <ostream>

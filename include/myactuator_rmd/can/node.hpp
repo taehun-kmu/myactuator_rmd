@@ -8,7 +8,6 @@
 
 #ifndef MYACTUATOR_RMD__CAN__NODE
 #define MYACTUATOR_RMD__CAN__NODE
-#pragma once
 
 #include <array>
 #include <chrono>

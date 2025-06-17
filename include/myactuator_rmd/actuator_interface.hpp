@@ -8,7 +8,6 @@
 
 #ifndef MYACTUATOR_RMD__ACTUATOR_INTERFACE
 #define MYACTUATOR_RMD__ACTUATOR_INTERFACE
-#pragma once
 
 #include <chrono>
 #include <cstdint>

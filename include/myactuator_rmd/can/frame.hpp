@@ -8,7 +8,6 @@
 
 #ifndef MYACTUATOR_RMD__CAN__FRAME
 #define MYACTUATOR_RMD__CAN__FRAME
-#pragma once
 
 #include <array>
 #include <cstdint>

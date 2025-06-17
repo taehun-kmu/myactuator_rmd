@@ -8,7 +8,6 @@
 
 #ifndef MYACTUATOR_RMD__DRIVER__CAN_DRIVER
 #define MYACTUATOR_RMD__DRIVER__CAN_DRIVER
-#pragma once
 
 #include <string>
 

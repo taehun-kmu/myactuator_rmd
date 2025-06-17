@@ -8,7 +8,6 @@
 
 #ifndef MYACTUATOR_RMD__PROTOCOL__REQUESTS
 #define MYACTUATOR_RMD__PROTOCOL__REQUESTS
-#pragma once
 
 #include <chrono>
 #include <cstdint>

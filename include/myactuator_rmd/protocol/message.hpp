@@ -7,7 +7,6 @@
 
 #ifndef MYACTUATOR_RMD__PROTOCOL__MESSAGE
 #define MYACTUATOR_RMD__PROTOCOL__MESSAGE
-#pragma once
 
 #include <array>
 #include <cstdint>

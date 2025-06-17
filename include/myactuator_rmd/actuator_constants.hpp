@@ -9,7 +9,6 @@
 
 #ifndef MYACTUATOR_RMD__ACTUATOR_CONSTANTS
 #define MYACTUATOR_RMD__ACTUATOR_CONSTANTS
-#pragma once
 
 #include <cstdint>
 

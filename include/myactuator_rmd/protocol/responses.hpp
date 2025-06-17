@@ -8,7 +8,6 @@
 
 #ifndef MYACTUATOR_RMD__PROTOCOL__RESPONSES
 #define MYACTUATOR_RMD__PROTOCOL__RESPONSES
-#pragma once
 
 #include <chrono>
 #include <cstdint>
