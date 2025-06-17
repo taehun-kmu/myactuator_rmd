@@ -8,7 +8,6 @@
 
 #ifndef MYACTUATOR_RMD__TEST__MOCK__ACTUATOR_MOCK
 #define MYACTUATOR_RMD__TEST__MOCK__ACTUATOR_MOCK
-#pragma once
 
 #include <gmock/gmock.h>
 

@@ -7,7 +7,6 @@
 
 #ifndef MYACTUATOR_RMD__TEST__ACTUATOR_ACTUATOR_MOCK_TEST
 #define MYACTUATOR_RMD__TEST__ACTUATOR_ACTUATOR_MOCK_TEST
-#pragma once
 
 #include <gtest/gtest.h>
 

@@ -8,7 +8,6 @@
 
 #ifndef MYACTUATOR_RMD__TEST__MOCK__ACTUATOR_ADAPTOR
 #define MYACTUATOR_RMD__TEST__MOCK__ACTUATOR_ADAPTOR
-#pragma once
 
 #include <cstdint>
 #include <string>
