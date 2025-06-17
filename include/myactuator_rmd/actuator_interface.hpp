@@ -12,6 +12,7 @@
 
 #include <chrono>
 #include <cstdint>
+#include <memory>
 #include <string>
 
 #include "myactuator_rmd/actuator_state/acceleration_type.hpp"
@@ -43,13 +44,12 @@ class ActuatorInterface {
    *    The actuator id [1, 32]
    */
   ActuatorInterface(Driver& driver, std::uint32_t const actuator_id);
+  ~ActuatorInterface();
   ActuatorInterface() = delete;
-  ActuatorInterface(ActuatorInterface const&) = default;
-  ActuatorInterface(ActuatorInterface&&) = default;
-
-  // Assignment operators
-  ActuatorInterface& operator=(ActuatorInterface const&) = default;
-  ActuatorInterface& operator=(ActuatorInterface&&) = default;
+  ActuatorInterface(ActuatorInterface const&) = delete;
+  ActuatorInterface& operator=(ActuatorInterface const&) = delete;
+  ActuatorInterface(ActuatorInterface&&) noexcept;
+  ActuatorInterface& operator=(ActuatorInterface&&) noexcept;
 
   // Getter methods
   /**\fn getAcceleration
@@ -382,9 +382,9 @@ class ActuatorInterface {
    */
   void stopMotor();
 
- protected:
-  Driver& driver_;
-  std::uint32_t actuator_id_;
+ private:
+  class Impl;
+  std::unique_ptr<Impl> pimpl_;
 };
 
 }  // namespace myactuator_rmd
