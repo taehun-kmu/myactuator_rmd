@@ -27,6 +27,7 @@
 #include "myactuator_rmd/can/exceptions.hpp"
 #include "myactuator_rmd/can/frame.hpp"
 #include "myactuator_rmd/can/utilities.hpp"
+#include "myactuator_rmd/debug_checks.hpp"
 
 namespace myactuator_rmd {
 namespace can {
@@ -100,41 +101,50 @@ Node::~Node() = default;
 
 // Node public methods - delegate to Impl
 void Node::setLoopback(bool const is_loopback) {
+  DCHECK_NOTNULL(pimpl_.get());
   pimpl_->setLoopback(is_loopback);
 }
 
 void Node::setRecvFilter(std::vector<std::uint32_t> const& can_ids,
                          bool const is_invert) {
+  DCHECK_NOTNULL(pimpl_.get());
   pimpl_->setRecvFilter(can_ids, is_invert);
 }
 
 void Node::setSendTimeout(std::chrono::microseconds const& timeout) {
+  DCHECK_NOTNULL(pimpl_.get());
   pimpl_->setSendTimeout(timeout);
 }
 
 void Node::setRecvTimeout(std::chrono::microseconds const& timeout) {
+  DCHECK_NOTNULL(pimpl_.get());
   pimpl_->setRecvTimeout(timeout);
 }
 
 void Node::setErrorFilters(bool const is_signal_errors) {
+  DCHECK_NOTNULL(pimpl_.get());
   pimpl_->setErrorFilters(is_signal_errors);
 }
 
 Frame Node::read() const {
+  DCHECK_NOTNULL(pimpl_.get());
   return pimpl_->read();
 }
 
 void Node::write(Frame const& frame) {
+  DCHECK_NOTNULL(pimpl_.get());
   pimpl_->write(frame);
 }
 
 void Node::write(std::uint32_t const can_id,
                  std::array<std::uint8_t, 8> const& data) {
+  DCHECK_NOTNULL(pimpl_.get());
   pimpl_->write(can_id, data);
 }
 
 // Impl class method implementations
 void Node::Impl::setLoopback(bool const is_loopback) {
+  DCHECK_GE(socket_, 0);  // Socket should be valid
   int const recv_own_msgs{static_cast<int>(is_loopback)};
   if (::setsockopt(socket_, SOL_CAN_RAW, CAN_RAW_RECV_OWN_MSGS, &recv_own_msgs,
                    sizeof(int)) < 0) {
@@ -146,10 +156,12 @@ void Node::Impl::setLoopback(bool const is_loopback) {
 
 void Node::Impl::setRecvFilter(std::vector<std::uint32_t> const& can_ids,
                                bool const is_invert) {
+  DCHECK_GE(socket_, 0);  // Socket should be valid
   std::vector<struct ::can_filter> filters{};
   filters.resize(can_ids.size());
   for (std::size_t i = 0; i < can_ids.size(); ++i) {
     auto const& can_id{can_ids[i]};
+    DCHECK_LE(can_id, 0x7FF);  // Standard CAN ID should be in valid range
     if (is_invert) {
       filters[i].can_id = can_id | CAN_INV_FILTER;
     } else {
@@ -166,6 +178,8 @@ void Node::Impl::setRecvFilter(std::vector<std::uint32_t> const& can_ids,
 }
 
 void Node::Impl::setSendTimeout(std::chrono::microseconds const& timeout) {
+  DCHECK_GE(socket_, 0);  // Socket should be valid
+  DCHECK_GE(timeout.count(), 0);  // Timeout should be non-negative
   struct ::timeval const send_timeout{myactuator_rmd::toTimeval(timeout)};
   if (::setsockopt(socket_, SOL_SOCKET, SO_SNDTIMEO,
                    reinterpret_cast<const char*>(&send_timeout),
@@ -177,6 +191,8 @@ void Node::Impl::setSendTimeout(std::chrono::microseconds const& timeout) {
 }
 
 void Node::Impl::setRecvTimeout(std::chrono::microseconds const& timeout) {
+  DCHECK_GE(socket_, 0);  // Socket should be valid
+  DCHECK_GE(timeout.count(), 0);  // Timeout should be non-negative
   struct ::timeval const recv_timeout{myactuator_rmd::toTimeval(timeout)};
   if (::setsockopt(socket_, SOL_SOCKET, SO_RCVTIMEO,
                    reinterpret_cast<const char*>(&recv_timeout),
@@ -188,6 +204,7 @@ void Node::Impl::setRecvTimeout(std::chrono::microseconds const& timeout) {
 }
 
 void Node::Impl::setErrorFilters(bool const is_signal_errors) {
+  DCHECK_GE(socket_, 0);  // Socket should be valid
   // See
   // https://github.com/linux-can/can-utils/blob/master/include/linux/can/error.h
   ::can_err_mask_t err_mask{};
@@ -205,6 +222,7 @@ void Node::Impl::setErrorFilters(bool const is_signal_errors) {
 }
 
 Frame Node::Impl::read() const {
+  DCHECK_GE(socket_, 0);  // Socket should be valid
   struct ::can_frame frame {};
   if (::read(socket_, &frame, sizeof(struct ::can_frame)) < 0) {
     throw SocketException(
@@ -252,6 +270,8 @@ void Node::Impl::write(Frame const& frame) {
 
 void Node::Impl::write(std::uint32_t const can_id,
                        std::array<std::uint8_t, 8> const& data) {
+  DCHECK_GE(socket_, 0);  // Socket should be valid
+  DCHECK_LE(can_id, 0x7FF);  // Standard CAN ID should be in valid range
   struct ::can_frame frame {};
   frame.can_id = can_id;
   frame.len = 8;
