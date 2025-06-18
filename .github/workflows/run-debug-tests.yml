@@ -1,25 +1,34 @@
-name: Release Tests
+name: Debug Tests
 
 on:
   push:
     paths:
-      - 'bindings/**'
-      - 'include/**'
-      - 'src/**'
-      - 'test/**'
+      - 'include/**/*debug*'
+      - 'include/**/*DCHECK*'
+      - 'test/debug_checks_test.cpp'
+      - 'test/**/*debug*'
+      - 'src/**/*debug*'
+      - 'CMakeLists.txt'
+  pull_request:
+    paths:
+      - 'include/**/*debug*'
+      - 'include/**/*DCHECK*'
+      - 'test/debug_checks_test.cpp'
+      - 'test/**/*debug*'
+      - 'src/**/*debug*'
       - 'CMakeLists.txt'
   schedule:
-    - cron: "0 12 1 * *"
+    - cron: "0 9 * * *"  # Daily at 9 AM UTC
   workflow_dispatch:
 
 jobs:
-  run-tests:
+  run-debug-tests:
     runs-on: ubuntu-latest
     env:
       VCAN_IFNAME: vcan_test
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: 'recursive'
           
@@ -30,19 +39,19 @@ jobs:
           sudo apt-get install -y can-utils iproute2 linux-modules-extra-$(uname -r)
           sudo apt-get install -y python3 python3-pybind11
           sudo apt-get install -y libboost-all-dev libgmock-dev libgtest-dev
-          sudo apt-get install -y clang-format gcovr
+          sudo apt-get install -y clang-format
           
       - name: Create build directory
         run: mkdir -p ${GITHUB_WORKSPACE}/build
         
-      - name: Configure project with CMake (Release build)
+      - name: Configure project with CMake (Debug build)
         run: |
           cmake -B ${GITHUB_WORKSPACE}/build -S ${GITHUB_WORKSPACE} \
             -G Ninja \
-            -D CMAKE_BUILD_TYPE=Release \
+            -D CMAKE_BUILD_TYPE=Debug \
             -D PYTHON_BINDINGS=on \
             -D BUILD_TESTING=on \
-            -D ENABLE_COVERAGE=on
+            -D ENABLE_COVERAGE=off
             
       - name: Check code formatting
         run: |
@@ -51,9 +60,9 @@ jobs:
           echo "::endgroup::"
         continue-on-error: false
         
-      - name: Build project (Release with optimizations)
+      - name: Build project with debug symbols
         run: |
-          echo "::group::Compiling release build with optimizations (DCHECK as no-ops)"
+          echo "::group::Compiling with debug symbols and DCHECK enabled"
           ninja -j $(nproc) -C ${GITHUB_WORKSPACE}/build
           echo "::endgroup::"
         continue-on-error: false
@@ -66,32 +75,37 @@ jobs:
           sudo ip link set up ${VCAN_IFNAME}
           echo "::endgroup::"
           
-      - name: Run release tests (Production behavior validation)
+      - name: Run debug tests (DCHECK enabled)
         run: |
-          echo "::group::Running release tests with production optimizations (DCHECK as no-ops)"
-          cd ${GITHUB_WORKSPACE}/build && ./run_tests --gtest_output=xml:release_results.xml
+          echo "::group::Running debug tests with DCHECK validation"
+          cd ${GITHUB_WORKSPACE}/build && ./run_debug_tests --gtest_output=xml:debug_results.xml
           echo "::endgroup::"
         continue-on-error: false
         
-      - name: Generate code coverage report
+      - name: Validate DCHECK performance (should be fast in debug)
         run: |
-          echo "::group::Generating coverage report"
-          gcovr -j $(nproc) \
-            --filter ${GITHUB_WORKSPACE}/include \
-            --filter ${GITHUB_WORKSPACE}/src \
-            --print-summary \
-            --xml-pretty \
-            --xml ${GITHUB_WORKSPACE}/build/coverage.xml
+          echo "::group::Performance validation for debug assertions"
+          cd ${GITHUB_WORKSPACE}/build
+          # Run a subset of performance-sensitive tests to ensure debug overhead is acceptable
+          ./run_debug_tests --gtest_filter="*Performance*" --gtest_output=xml:debug_performance.xml
           echo "::endgroup::"
-        if: success()
+        continue-on-error: true
+
+      - name: Verify test result files
+        run: |
+          echo "::group::Checking for generated test result files"
+          ls -la ${GITHUB_WORKSPACE}/build/*.xml || echo "No XML files found"
+          echo "::endgroup::"
+        if: always()
         
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+      - name: Upload debug test results
+        uses: actions/upload-artifact@v4
         with:
-          files: ${GITHUB_WORKSPACE}/build/coverage.xml
-          token: ${{ secrets.CODECOV_TOKEN }}
-          fail_ci_if_error: false
-        if: success()
+          name: debug-test-results
+          path: |
+            build/debug_results.xml
+            build/debug_performance.xml
+        if: always()
         
       - name: Clean up virtual CAN interface
         run: |
