@@ -65,10 +65,17 @@ jobs:
           sudo ip link set up ${VCAN_IFNAME}
           echo "::endgroup::"
           
-      - name: Run unit tests
+      - name: Run release tests (DCHECK disabled)
         run: |
-          echo "::group::Running unit tests"
-          cd ${GITHUB_WORKSPACE}/build && ctest --verbose
+          echo "::group::Running release tests with DCHECK as no-ops"
+          cd ${GITHUB_WORKSPACE}/build && ./run_tests --gtest_output=xml:release_results.xml
+          echo "::endgroup::"
+        continue-on-error: false
+        
+      - name: Run debug tests (DCHECK enabled)
+        run: |
+          echo "::group::Running debug tests with DCHECK validation"
+          cd ${GITHUB_WORKSPACE}/build && ./run_debug_tests --gtest_output=xml:debug_results.xml
           echo "::endgroup::"
         continue-on-error: false
         
