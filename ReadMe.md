@@ -162,3 +162,98 @@ Finally you can **launch all the tests** with the following command:
 ```bash
 $ ctest
 ```
+
+
+
+## 5. Debug vs Release Build Behavior
+
+This SDK implements a comprehensive **debug assertion system** using `DCHECK` macros that provide runtime validation during development while maintaining zero performance overhead in production releases.
+
+### 5.1 DCHECK System Overview
+
+The `DCHECK` (Debug Check) macros perform invariant checking and validation only in debug builds. They are designed to catch programming errors early during development without affecting release performance.
+
+**Available DCHECK macros:**
+- `DCHECK(condition)` - Basic assertion
+- `DCHECK_EQ(a, b)`, `DCHECK_NE(a, b)` - Equality/inequality checks
+- `DCHECK_LT(a, b)`, `DCHECK_LE(a, b)`, `DCHECK_GT(a, b)`, `DCHECK_GE(a, b)` - Comparison checks
+- `DCHECK_NOTNULL(ptr)` - Null pointer validation
+- `DCHECK_STREQ(a, b)`, `DCHECK_STRNE(a, b)` - String comparison checks
+
+### 5.2 Build Configuration Differences
+
+**Debug Builds (without `-DNDEBUG`):**
+- DCHECK macros perform actual runtime validation
+- Failed assertions throw `DebugAssertionException` with detailed error messages
+- Include file names, line numbers, and actual vs expected values
+- Useful for development and testing
+
+**Release Builds (with `-DNDEBUG`):**
+- DCHECK macros compile to no-ops (`((void)0)`)
+- Zero performance overhead - benchmarked at <10ms for 1 million checks
+- No exception handling for assertions
+- Optimized for production use
+
+### 5.3 Building in Debug vs Release Mode
+
+**For debug builds with DCHECK validation:**
+```bash
+$ mkdir build_debug
+$ cd build_debug
+$ cmake .. -D BUILD_TESTING=on -D CMAKE_BUILD_TYPE=Debug
+$ make -j $(nproc)
+```
+
+**For release builds with DCHECK disabled:**
+```bash
+$ mkdir build_release  
+$ cd build_release
+$ cmake .. -D BUILD_TESTING=on -D CMAKE_BUILD_TYPE=Release
+$ make -j $(nproc)
+```
+
+### 5.4 Dual Test Infrastructure
+
+The project includes comprehensive testing for both build configurations:
+
+- **`run_tests`** - Release build executable (DCHECK as no-ops)
+- **`run_debug_tests`** - Debug build executable (DCHECK validation enabled)
+
+Both test suites run automatically in CI/CD to ensure:
+1. Debug assertions catch invalid conditions correctly
+2. Release builds maintain performance without assertion overhead
+3. Behavioral consistency between configurations
+
+**Run specific test configurations:**
+```bash
+# Run release tests (DCHECK disabled)
+$ ./build/run_tests
+
+# Run debug tests (DCHECK enabled)  
+$ ./build/run_debug_tests
+
+# Run both configurations
+$ ctest
+```
+
+### 5.5 Example Usage
+
+```cpp
+#include "myactuator_rmd/debug_checks.hpp"
+
+void processCanId(uint32_t can_id) {
+    // Validates CAN ID range in debug builds only
+    DCHECK_LE(can_id, 0x7FF);
+    
+    // Process the validated CAN ID...
+}
+
+void initializeDriver(CanDriver* driver) {
+    // Validates pointer in debug builds only
+    auto validated_driver = DCHECK_NOTNULL(driver);
+    
+    // Use validated driver...
+}
+```
+
+In debug builds, invalid inputs trigger detailed exceptions. In release builds, these checks are completely removed for optimal performance.
