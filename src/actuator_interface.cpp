@@ -11,6 +11,7 @@
 #include "myactuator_rmd/actuator_state/motor_status_1.hpp"
 #include "myactuator_rmd/actuator_state/motor_status_2.hpp"
 #include "myactuator_rmd/actuator_state/motor_status_3.hpp"
+#include "myactuator_rmd/debug_checks.hpp"
 #include "myactuator_rmd/driver/driver.hpp"
 #include "myactuator_rmd/exceptions.hpp"
 #include "myactuator_rmd/protocol/requests.hpp"
@@ -101,138 +102,174 @@ ActuatorInterface& ActuatorInterface::operator=(
 
 // ActuatorInterface public methods - delegate to Impl
 std::int32_t ActuatorInterface::getAcceleration() {
+  DCHECK_NOTNULL(pimpl_.get());
   return pimpl_->getAcceleration();
 }
 
 std::uint16_t ActuatorInterface::getCanId() {
+  DCHECK_NOTNULL(pimpl_.get());
   return pimpl_->getCanId();
 }
 
 Gains ActuatorInterface::getControllerGains() {
+  DCHECK_NOTNULL(pimpl_.get());
   return pimpl_->getControllerGains();
 }
 
 ControlMode ActuatorInterface::getControlMode() {
+  DCHECK_NOTNULL(pimpl_.get());
   return pimpl_->getControlMode();
 }
 
 std::string ActuatorInterface::getMotorModel() {
+  DCHECK_NOTNULL(pimpl_.get());
   return pimpl_->getMotorModel();
 }
 
 float ActuatorInterface::getMotorPower() {
+  DCHECK_NOTNULL(pimpl_.get());
   return pimpl_->getMotorPower();
 }
 
 MotorStatus1 ActuatorInterface::getMotorStatus1() {
+  DCHECK_NOTNULL(pimpl_.get());
   return pimpl_->getMotorStatus1();
 }
 
 MotorStatus2 ActuatorInterface::getMotorStatus2() {
+  DCHECK_NOTNULL(pimpl_.get());
   return pimpl_->getMotorStatus2();
 }
 
 MotorStatus3 ActuatorInterface::getMotorStatus3() {
+  DCHECK_NOTNULL(pimpl_.get());
   return pimpl_->getMotorStatus3();
 }
 
 float ActuatorInterface::getMultiTurnAngle() {
+  DCHECK_NOTNULL(pimpl_.get());
   return pimpl_->getMultiTurnAngle();
 }
 
 std::int32_t ActuatorInterface::getMultiTurnEncoderPosition() {
+  DCHECK_NOTNULL(pimpl_.get());
   return pimpl_->getMultiTurnEncoderPosition();
 }
 
 std::int32_t ActuatorInterface::getMultiTurnEncoderOriginalPosition() {
+  DCHECK_NOTNULL(pimpl_.get());
   return pimpl_->getMultiTurnEncoderOriginalPosition();
 }
 
 std::int32_t ActuatorInterface::getMultiTurnEncoderZeroOffset() {
+  DCHECK_NOTNULL(pimpl_.get());
   return pimpl_->getMultiTurnEncoderZeroOffset();
 }
 
 std::chrono::milliseconds ActuatorInterface::getRuntime() {
+  DCHECK_NOTNULL(pimpl_.get());
   return pimpl_->getRuntime();
 }
 
 float ActuatorInterface::getSingleTurnAngle() {
+  DCHECK_NOTNULL(pimpl_.get());
   return pimpl_->getSingleTurnAngle();
 }
 
 std::int16_t ActuatorInterface::getSingleTurnEncoderPosition() {
+  DCHECK_NOTNULL(pimpl_.get());
   return pimpl_->getSingleTurnEncoderPosition();
 }
 
 std::uint32_t ActuatorInterface::getVersionDate() {
+  DCHECK_NOTNULL(pimpl_.get());
   return pimpl_->getVersionDate();
 }
 
 void ActuatorInterface::lockBrake() {
+  DCHECK_NOTNULL(pimpl_.get());
   pimpl_->lockBrake();
 }
 
 void ActuatorInterface::releaseBrake() {
+  DCHECK_NOTNULL(pimpl_.get());
   pimpl_->releaseBrake();
 }
 
 void ActuatorInterface::reset() {
+  DCHECK_NOTNULL(pimpl_.get());
   pimpl_->reset();
 }
 
 Feedback ActuatorInterface::sendCurrentSetpoint(float const current) {
+  DCHECK_NOTNULL(pimpl_.get());
   return pimpl_->sendCurrentSetpoint(current);
 }
 
 Feedback ActuatorInterface::sendPositionAbsoluteSetpoint(
     float const position, float const max_speed) {
+  DCHECK_NOTNULL(pimpl_.get());
   return pimpl_->sendPositionAbsoluteSetpoint(position, max_speed);
 }
 
 Feedback ActuatorInterface::sendTorqueSetpoint(float const torque,
                                                float const torque_constant) {
+  DCHECK_NOTNULL(pimpl_.get());
   return pimpl_->sendTorqueSetpoint(torque, torque_constant);
 }
 
 Feedback ActuatorInterface::sendVelocitySetpoint(float const speed) {
+  DCHECK_NOTNULL(pimpl_.get());
   return pimpl_->sendVelocitySetpoint(speed);
 }
 
 void ActuatorInterface::setAcceleration(std::uint32_t const acceleration,
                                         AccelerationType const mode) {
+  DCHECK_NOTNULL(pimpl_.get());
   pimpl_->setAcceleration(acceleration, mode);
 }
 
 void ActuatorInterface::setCanBaudRate(CanBaudRate const baud_rate) {
+  DCHECK_NOTNULL(pimpl_.get());
   pimpl_->setCanBaudRate(baud_rate);
 }
 
 void ActuatorInterface::setCanId(std::uint16_t const can_id) {
+  DCHECK_NOTNULL(pimpl_.get());
+  DCHECK_LE(can_id, 0x7FF);  // CAN ID must be valid 11-bit identifier
   pimpl_->setCanId(can_id);
 }
 
 std::int32_t ActuatorInterface::setCurrentPositionAsEncoderZero() {
+  DCHECK_NOTNULL(pimpl_.get());
   return pimpl_->setCurrentPositionAsEncoderZero();
 }
 
 void ActuatorInterface::setEncoderZero(std::int32_t const encoder_offset) {
+  DCHECK_NOTNULL(pimpl_.get());
   pimpl_->setEncoderZero(encoder_offset);
 }
 
 Gains ActuatorInterface::setControllerGains(Gains const& gains,
                                             bool const is_persistent) {
+  DCHECK_NOTNULL(pimpl_.get());
   return pimpl_->setControllerGains(gains, is_persistent);
 }
 
 void ActuatorInterface::setTimeout(std::chrono::milliseconds const& timeout) {
+  DCHECK_NOTNULL(pimpl_.get());
+  DCHECK_GE(timeout.count(), 0);  // Timeout must be non-negative
+  DCHECK_LE(timeout.count(), 60000);  // Timeout should be reasonable (max 60 seconds)
   pimpl_->setTimeout(timeout);
 }
 
 void ActuatorInterface::shutdownMotor() {
+  DCHECK_NOTNULL(pimpl_.get());
   pimpl_->shutdownMotor();
 }
 
 void ActuatorInterface::stopMotor() {
+  DCHECK_NOTNULL(pimpl_.get());
   pimpl_->stopMotor();
 }
 
