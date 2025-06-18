@@ -178,7 +178,7 @@ void Node::Impl::setRecvFilter(std::vector<std::uint32_t> const& can_ids,
 }
 
 void Node::Impl::setSendTimeout(std::chrono::microseconds const& timeout) {
-  DCHECK_GE(socket_, 0);  // Socket should be valid
+  DCHECK_GE(socket_, 0);          // Socket should be valid
   DCHECK_GE(timeout.count(), 0);  // Timeout should be non-negative
   struct ::timeval const send_timeout{myactuator_rmd::toTimeval(timeout)};
   if (::setsockopt(socket_, SOL_SOCKET, SO_SNDTIMEO,
@@ -191,7 +191,7 @@ void Node::Impl::setSendTimeout(std::chrono::microseconds const& timeout) {
 }
 
 void Node::Impl::setRecvTimeout(std::chrono::microseconds const& timeout) {
-  DCHECK_GE(socket_, 0);  // Socket should be valid
+  DCHECK_GE(socket_, 0);          // Socket should be valid
   DCHECK_GE(timeout.count(), 0);  // Timeout should be non-negative
   struct ::timeval const recv_timeout{myactuator_rmd::toTimeval(timeout)};
   if (::setsockopt(socket_, SOL_SOCKET, SO_RCVTIMEO,
@@ -270,7 +270,7 @@ void Node::Impl::write(Frame const& frame) {
 
 void Node::Impl::write(std::uint32_t const can_id,
                        std::array<std::uint8_t, 8> const& data) {
-  DCHECK_GE(socket_, 0);  // Socket should be valid
+  DCHECK_GE(socket_, 0);     // Socket should be valid
   DCHECK_LE(can_id, 0x7FF);  // Standard CAN ID should be in valid range
   struct ::can_frame frame {};
   frame.can_id = can_id;

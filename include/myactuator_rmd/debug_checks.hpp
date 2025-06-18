@@ -54,9 +54,9 @@ inline DebugAssertionException MakeComparisonAssertionException(
     const std::string& lhs_str, const std::string& rhs_str, const T1& lhs_val,
     const T2& rhs_val, const std::string& op_str, const char* file, int line) {
   std::ostringstream ss;
-  ss << "Debug assertion failed: " << lhs_str << " " << op_str << " "
-     << rhs_str << " (actual: " << lhs_val << " " << op_str << " " << rhs_val
-     << ") at " << file << ":" << line;
+  ss << "Debug assertion failed: " << lhs_str << " " << op_str << " " << rhs_str
+     << " (actual: " << lhs_val << " " << op_str << " " << rhs_val << ") at "
+     << file << ":" << line;
   return DebugAssertionException(ss.str());
 }
 
@@ -80,86 +80,88 @@ inline DebugAssertionException MakeComparisonAssertionException(
 
 #else
 
-// Debug build: DCHECK macros perform actual checks and throw exceptions on failure
-#define DCHECK(condition)                                                \
-  do {                                                                   \
-    if (!(condition)) {                                                  \
-      throw ::myactuator_rmd::debug::MakeDebugAssertionException(        \
-          #condition, __FILE__, __LINE__);                               \
-    }                                                                    \
+// Debug build: DCHECK macros perform actual checks and throw exceptions on
+// failure
+#define DCHECK(condition)                                         \
+  do {                                                            \
+    if (!(condition)) {                                           \
+      throw ::myactuator_rmd::debug::MakeDebugAssertionException( \
+          #condition, __FILE__, __LINE__);                        \
+    }                                                             \
   } while (0)
 
-#define DCHECK_EQ(lhs, rhs)                                              \
-  do {                                                                   \
-    if (!((lhs) == (rhs))) {                                             \
-      throw ::myactuator_rmd::debug::MakeComparisonAssertionException(   \
-          #lhs, #rhs, (lhs), (rhs), "==", __FILE__, __LINE__);           \
-    }                                                                    \
+#define DCHECK_EQ(lhs, rhs)                                            \
+  do {                                                                 \
+    if (!((lhs) == (rhs))) {                                           \
+      throw ::myactuator_rmd::debug::MakeComparisonAssertionException( \
+          #lhs, #rhs, (lhs), (rhs), "==", __FILE__, __LINE__);         \
+    }                                                                  \
   } while (0)
 
-#define DCHECK_NE(lhs, rhs)                                              \
-  do {                                                                   \
-    if (!((lhs) != (rhs))) {                                             \
-      throw ::myactuator_rmd::debug::MakeComparisonAssertionException(   \
-          #lhs, #rhs, (lhs), (rhs), "!=", __FILE__, __LINE__);           \
-    }                                                                    \
+#define DCHECK_NE(lhs, rhs)                                            \
+  do {                                                                 \
+    if (!((lhs) != (rhs))) {                                           \
+      throw ::myactuator_rmd::debug::MakeComparisonAssertionException( \
+          #lhs, #rhs, (lhs), (rhs), "!=", __FILE__, __LINE__);         \
+    }                                                                  \
   } while (0)
 
-#define DCHECK_LT(lhs, rhs)                                              \
-  do {                                                                   \
-    if (!((lhs) < (rhs))) {                                              \
-      throw ::myactuator_rmd::debug::MakeComparisonAssertionException(   \
-          #lhs, #rhs, (lhs), (rhs), "<", __FILE__, __LINE__);            \
-    }                                                                    \
+#define DCHECK_LT(lhs, rhs)                                            \
+  do {                                                                 \
+    if (!((lhs) < (rhs))) {                                            \
+      throw ::myactuator_rmd::debug::MakeComparisonAssertionException( \
+          #lhs, #rhs, (lhs), (rhs), "<", __FILE__, __LINE__);          \
+    }                                                                  \
   } while (0)
 
-#define DCHECK_LE(lhs, rhs)                                              \
-  do {                                                                   \
-    if (!((lhs) <= (rhs))) {                                             \
-      throw ::myactuator_rmd::debug::MakeComparisonAssertionException(   \
-          #lhs, #rhs, (lhs), (rhs), "<=", __FILE__, __LINE__);           \
-    }                                                                    \
+#define DCHECK_LE(lhs, rhs)                                            \
+  do {                                                                 \
+    if (!((lhs) <= (rhs))) {                                           \
+      throw ::myactuator_rmd::debug::MakeComparisonAssertionException( \
+          #lhs, #rhs, (lhs), (rhs), "<=", __FILE__, __LINE__);         \
+    }                                                                  \
   } while (0)
 
-#define DCHECK_GT(lhs, rhs)                                              \
-  do {                                                                   \
-    if (!((lhs) > (rhs))) {                                              \
-      throw ::myactuator_rmd::debug::MakeComparisonAssertionException(   \
-          #lhs, #rhs, (lhs), (rhs), ">", __FILE__, __LINE__);            \
-    }                                                                    \
+#define DCHECK_GT(lhs, rhs)                                            \
+  do {                                                                 \
+    if (!((lhs) > (rhs))) {                                            \
+      throw ::myactuator_rmd::debug::MakeComparisonAssertionException( \
+          #lhs, #rhs, (lhs), (rhs), ">", __FILE__, __LINE__);          \
+    }                                                                  \
   } while (0)
 
-#define DCHECK_GE(lhs, rhs)                                              \
-  do {                                                                   \
-    if (!((lhs) >= (rhs))) {                                             \
-      throw ::myactuator_rmd::debug::MakeComparisonAssertionException(   \
-          #lhs, #rhs, (lhs), (rhs), ">=", __FILE__, __LINE__);           \
-    }                                                                    \
+#define DCHECK_GE(lhs, rhs)                                            \
+  do {                                                                 \
+    if (!((lhs) >= (rhs))) {                                           \
+      throw ::myactuator_rmd::debug::MakeComparisonAssertionException( \
+          #lhs, #rhs, (lhs), (rhs), ">=", __FILE__, __LINE__);         \
+    }                                                                  \
   } while (0)
 
-#define DCHECK_NOTNULL(ptr)                                              \
-  ((ptr) == nullptr ?                                                   \
-     (throw ::myactuator_rmd::debug::MakeDebugAssertionException(       \
-          #ptr " != nullptr", __FILE__, __LINE__,                      \
-          "Null pointer dereference detected"),                         \
-      static_cast<decltype(ptr)>(nullptr)) : (ptr))
+#define DCHECK_NOTNULL(ptr)                                           \
+  ((ptr) == nullptr                                                   \
+       ? (throw ::myactuator_rmd::debug::MakeDebugAssertionException( \
+              #ptr " != nullptr", __FILE__, __LINE__,                 \
+              "Null pointer dereference detected"),                   \
+          static_cast<decltype(ptr)>(nullptr))                        \
+       : (ptr))
 
-#define DCHECK_STREQ(lhs, rhs)                                           \
-  do {                                                                   \
-    if (std::string(lhs) != std::string(rhs)) {                         \
-      throw ::myactuator_rmd::debug::MakeComparisonAssertionException(   \
-          #lhs, #rhs, std::string(lhs), std::string(rhs), "==",         \
-          __FILE__, __LINE__);                                           \
-    }                                                                    \
+#define DCHECK_STREQ(lhs, rhs)                                            \
+  do {                                                                    \
+    if (std::string(lhs) != std::string(rhs)) {                           \
+      throw ::myactuator_rmd::debug::MakeComparisonAssertionException(    \
+          #lhs, #rhs, std::string(lhs), std::string(rhs), "==", __FILE__, \
+          __LINE__);                                                      \
+    }                                                                     \
   } while (0)
 
-#define DCHECK_STRNE(lhs, rhs)                                           \
-  do {                                                                   \
-    if (std::string(lhs) == std::string(rhs)) {                         \
-      throw ::myactuator_rmd::debug::MakeComparisonAssertionException(   \
-          #lhs, #rhs, std::string(lhs), std::string(rhs), "!=",         \
-          __FILE__, __LINE__);                                           \
-    }                                                                    \
+#define DCHECK_STRNE(lhs, rhs)                                            \
+  do {                                                                    \
+    if (std::string(lhs) == std::string(rhs)) {                           \
+      throw ::myactuator_rmd::debug::MakeComparisonAssertionException(    \
+          #lhs, #rhs, std::string(lhs), std::string(rhs), "!=", __FILE__, \
+          __LINE__);                                                      \
+    }                                                                     \
   } while (0)
 
 #endif  // NDEBUG

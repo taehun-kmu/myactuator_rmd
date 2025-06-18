@@ -259,7 +259,8 @@ Gains ActuatorInterface::setControllerGains(Gains const& gains,
 void ActuatorInterface::setTimeout(std::chrono::milliseconds const& timeout) {
   DCHECK_NOTNULL(pimpl_.get());
   DCHECK_GE(timeout.count(), 0);  // Timeout must be non-negative
-  DCHECK_LE(timeout.count(), 60000);  // Timeout should be reasonable (max 60 seconds)
+  DCHECK_LE(timeout.count(),
+            60000);  // Timeout should be reasonable (max 60 seconds)
   pimpl_->setTimeout(timeout);
 }
 
