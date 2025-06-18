@@ -2,6 +2,7 @@
 
 #include <array>
 #include <cstdint>
+#include <sstream>
 #include <string>
 
 #include "myactuator_rmd/can/frame.hpp"
@@ -22,7 +23,9 @@ void ActuatorAdaptor::handleRequest() {
     myactuator_rmd::GetVersionDateResponse const response{getVersionDate()};
     send(response, actuator_id_);
   } else {
-    throw myactuator_rmd::Exception("Unrecognized request");
+    std::stringstream ss{};
+    ss << std::showbase << std::hex << static_cast<std::uint16_t>(data[0]);
+    throw myactuator_rmd::Exception("Unrecognized command '" + ss.str() + "'");
   }
   return;
 }

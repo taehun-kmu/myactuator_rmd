@@ -119,8 +119,8 @@ template <std::uint32_t SEND_ID_OFFSET, std::uint32_t RECEIVE_ID_OFFSET>
 void CanNode<SEND_ID_OFFSET, RECEIVE_ID_OFFSET>::addId(
     std::uint32_t const actuator_id) {
   if ((actuator_id < 1) || (actuator_id > 32)) {
-    throw Exception("Given actuator id '" + std::to_string(actuator_id) +
-                    "' out of admittable range [1, 32]!");
+    throw Exception("Actuator ID '" + std::to_string(actuator_id) +
+                    "' out of range [1, 32]");
   }
   actuator_ids_.push_back(actuator_id);
   std::vector<std::uint32_t> can_receive_ids{};
