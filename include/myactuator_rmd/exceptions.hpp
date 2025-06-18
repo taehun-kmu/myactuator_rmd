@@ -40,6 +40,16 @@ class ValueRangeException final : public Exception {
   using Exception::Exception;
 };
 
+/**\class DebugAssertionException
+ * \brief
+ *    Exception class for debug-time assertion failures
+ *    Only thrown in debug builds when DCHECK macros fail
+ */
+class DebugAssertionException final : public Exception {
+ public:
+  using Exception::Exception;
+};
+
 }  // namespace myactuator_rmd
 
 #endif  // MYACTUATOR_RMD__EXCEPTIONS
