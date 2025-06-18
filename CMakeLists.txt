@@ -117,7 +117,9 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
   endif()
 
   find_package(GTest REQUIRED)
-  add_executable(run_tests
+  
+  # Common test source files
+  set(COMMON_TEST_SOURCES
     test/can/utilities_test.cpp
     test/protocol/requests_test.cpp
     test/protocol/responses_test.cpp
@@ -125,28 +127,38 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
     test/mock/actuator_mock.cpp
     test/mock/actuator_actuator_mock_test.cpp
     test/actuator_test.cpp
+    test/debug_checks_test.cpp
     test/run_tests.cpp
   )
-  target_compile_features(run_tests PUBLIC
-    cxx_std_17
-  )
+  
+  # Release tests (with NDEBUG defined) - existing behavior
+  add_executable(run_tests ${COMMON_TEST_SOURCES})
+  target_compile_features(run_tests PUBLIC cxx_std_17)
   target_compile_definitions(run_tests PUBLIC NDEBUG)
-  # Add strict compilation flags for tests
   target_compile_options(run_tests PRIVATE
-    -Wall
-    -Wextra
-    -Werror
-    -Wpedantic
+    -Wall -Wextra -Werror -Wpedantic
   )
   set(MYACTUATOR_RMD_TEST_LIBRARIES myactuator_rmd GTest::gmock GTest::gtest pthread)
-  target_link_libraries(run_tests PUBLIC
-    ${MYACTUATOR_RMD_TEST_LIBRARIES}
-  )
+  target_link_libraries(run_tests PUBLIC ${MYACTUATOR_RMD_TEST_LIBRARIES})
   gtest_discover_tests(run_tests
-    TEST_SUFFIX .noArgs
-    TEST_LIST noArgsTests
+    TEST_SUFFIX .release
+    TEST_LIST releaseTests
   )
-  set_tests_properties(${noArgsTests} PROPERTIES TIMEOUT 10)
+  set_tests_properties(${releaseTests} PROPERTIES TIMEOUT 10)
+  
+  # Debug tests (without NDEBUG) - for DCHECK validation
+  add_executable(run_debug_tests ${COMMON_TEST_SOURCES})
+  target_compile_features(run_debug_tests PUBLIC cxx_std_17)
+  # Note: No NDEBUG defined here - this enables DCHECK macros
+  target_compile_options(run_debug_tests PRIVATE
+    -Wall -Wextra -Werror -Wpedantic -g -O0  # Debug flags
+  )
+  target_link_libraries(run_debug_tests PUBLIC ${MYACTUATOR_RMD_TEST_LIBRARIES})
+  gtest_discover_tests(run_debug_tests
+    TEST_SUFFIX .debug
+    TEST_LIST debugTests
+  )
+  set_tests_properties(${debugTests} PROPERTIES TIMEOUT 15)
 
   if(SETUP_TEST_IFNAME)
     set(VCAN_IFNAME "vcan_test")
